@@ -1,40 +1,39 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+class AuthService {
+  Future<UserCredential> signInWithGoogle() async {
+    // Create a new provider
+    GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
-class AuthService {Future<UserCredential> signInWithGoogle() async {
-  GoogleAuthProvider googleProvider = GoogleAuthProvider();
+    googleProvider
+        .addScope('https://www.googleapis.com/auth/contacts.readonly');
+    googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
 
-googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-googleProvider.setCustomParameters({
-  'login_hint': 'user@example.com'
-});
-  
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    // // Trigger the authentication flow
+    // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
+    // // Obtain the auth details from the request
+    // final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-  // Once signed in, return the UserCredential
-  UserCredential userCredential =
-  await FirebaseAuth.instance.signInWithCredential(credential);
-  print(userCredential);
-  return userCredential;
-}
-Future<void> googleSignOut() async{
+    // // Create a new credential
+    // final credential = GoogleAuthProvider.credential(
+    //   accessToken: googleAuth?.accessToken,
+    //   idToken: googleAuth?.idToken,
+    // );
 
-await FirebaseAuth.instance.signOut();
-await GoogleSignIn().signOut();
+    // // Once signed in, return the UserCredential
+    // UserCredential userCredential =
+    // await FirebaseAuth.instance.signInWithCredential(credential);
+    // print(userCredential);
+    // return userCredential;
+  }
 
-}
-  
+  Future<void> googleSignOut() async {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+  }
 }
